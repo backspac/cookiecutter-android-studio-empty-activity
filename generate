@@ -1,0 +1,39 @@
+#! /usr/bin/env fish
+
+set -l base_app_dir_name "MyApplication"
+
+# Copy the generated Android Studio project
+cp -r $HOME/AndroidStudioProjects/$base_app_dir_name .
+
+# Go to app dir
+cd $base_app_dir_name
+
+# Remove unwanted files
+rm -rf .gradle gradlew{,.bat} gradle/{gradle-daemon-jvm.properties,wrapper} .idea
+
+# Inject cookiecutter variables
+rg -H "com.example.myapplication" --files-with-matches | xargs sed -i 's/com.example.myapplication/{{ cookiecutter.package_name }}/g'
+rg -H "MyApplication" --files-with-matches | xargs sed -i 's/MyApplication/{{ cookiecutter.app_class_name }}/g'
+rg -H "My Application" --files-with-matches | xargs sed -i 's/My Application/{{ cookiecutter.app_full_name }}/g'
+sed -i 's/\(minSdk = \)\([0-9]\+\)/\1{{ cookiecutter.min_sdk }}/' app/build.gradle.kts
+sed -i 's/\(sdk\.dir=\)\(.*\)/\1{{ cookiecutter.sdk_dir }}/' local.properties
+
+# Adapt directory tree
+mv app/src/androidTest/java/{com/example/myapplication,"{{cookiecutter.package_dir}}"}
+mv app/src/main/java/{com/example/myapplication,"{{cookiecutter.package_dir}}"}
+mv app/src/test/java/{com/example/myapplication,"{{cookiecutter.package_dir}}"}
+rmdir app/src/{androidTest,main,test}/java/com{/example,}
+
+# Add a new line at EOF if it's not there yet
+for file in (fd -H --exclude "*.webp" --exclude ".git/" --type file --no-ignore)
+    if test "$(tail -c1 "$file" | wc -l)" -eq 0
+        echo >> "$file"
+    end
+end
+
+# Come back to project
+cd ..
+
+# Overwrite old template
+rm -rf "{{cookiecutter.app_dir}}"
+mv $base_app_dir_name "{{cookiecutter.app_dir}}"

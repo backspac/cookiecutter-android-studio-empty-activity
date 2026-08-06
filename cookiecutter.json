@@ -1,0 +1,10 @@
+{
+    "app_full_name": "My Application",
+    "app_class_name": "{{ cookiecutter.app_full_name | replace(' ', '') }}",
+    "app_dir": "{{ cookiecutter.app_class_name }}",
+    "package_name": "com.example.{{ cookiecutter.app_class_name | lower }}",
+    "package_dir": "{{ cookiecutter.package_name | replace('.', '/') }}",
+    "sdk_dir": "{{ env('HOME') }}/Android/Sdk",
+    "min_sdk": 26,
+    "_extensions": ["extensions.local_extensions.EnvExtension"]
+}
