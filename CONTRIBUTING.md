@@ -4,6 +4,8 @@
 
 A basic script is available to generate the template. It assumes a lot of things, but should work for now.
 
+If certain changes weren't applied as they should have been, please adapt the script instead of hard-coding them into the template.
+
 ### Dependencies
 
 - [fish](https://github.com/fish-shell/fish-shell)
